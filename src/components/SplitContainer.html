@@ -1,0 +1,32 @@
+<template>
+	<style>
+		:host {
+			position: relative;
+			display: block;
+			z-index: 0;
+			--split: 100%;
+		}
+		.content {
+			clip-path: inset(0px 0px calc(100% - var(--split)) 0px);
+		}
+		.clone {
+			position: absolute;
+			inset: 0;
+			clip-path: inset(var(--split) 0px 0px 0px);
+		}
+		.clone split-target {
+			font-weight: 600;
+			text-decoration: underline;
+		}
+		.split {
+			position: absolute;
+			inset: var(--split) 0 0;
+		}
+	</style>
+	<div class="content">
+		<slot></slot>
+	</div>
+	<div class="split">
+		<slot name="split"></slot>
+	</div>
+</template>

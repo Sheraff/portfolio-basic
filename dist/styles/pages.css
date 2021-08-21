@@ -1,0 +1,9 @@
+ul {
+	margin: 0;
+	padding-top: 1em;
+	padding-bottom: 1em;
+}
+
+[slot=split]:focus {
+	outline: none;
+}

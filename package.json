@@ -1,12 +1,15 @@
 {
   "name": "portfolio-basic",
   "version": "1.0.0",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "description": "",
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "start": "serve dist",
+    "start": "serve .dist",
     "build-gh-pages": "webpack --config gh-pages.config.js"
   },
   "repository": {
@@ -21,8 +24,9 @@
   },
   "homepage": "https://github.com/Sheraff/portfolio-basic#readme",
   "devDependencies": {
+    "file-loader": "^6.2.0",
+    "raw-loader": "^4.0.2",
     "webpack": "^5.51.1",
-    "webpack-cli": "^4.8.0",
-    "raw-loader": "^4.0.2"
+    "webpack-cli": "^4.8.0"
   }
 }

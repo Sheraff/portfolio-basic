@@ -1,4 +1,4 @@
-import template from 'raw-loader!./SplitContainer.html'
+import template from 'raw-loader!./SplitContainer.template.html'
 const range = document.createRange()
 const fragment = range.createContextualFragment(template)
 

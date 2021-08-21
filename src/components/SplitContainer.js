@@ -71,7 +71,9 @@ export default class SplitContainer extends HTMLElement {
 					const scroll = window.scrollY
 					this.split.focus()
 					window.scrollTo(0, scroll)
+					this.style.removeProperty('pointer-events')
 				})
+			this.style.setProperty('pointer-events', 'none')
 		} else {
 			this.movables.forEach(movable => 
 				movable.getAnimations().forEach(anim => {

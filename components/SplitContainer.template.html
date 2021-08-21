@@ -10,13 +10,18 @@
 			clip-path: inset(0px 0px calc(100% - var(--split)) 0px);
 		}
 		.clone {
+			--delta: 0px;
 			position: absolute;
 			inset: 0;
 			clip-path: inset(var(--split) 0px 0px 0px);
+			transform: translateY(var(--delta));
 		}
-		.clone split-target {
+		split-target {
 			font-weight: 600;
 			text-decoration: underline;
+		}
+		a {
+			color: var(--color);
 		}
 		.split {
 			position: absolute;

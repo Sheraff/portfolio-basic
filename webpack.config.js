@@ -20,6 +20,11 @@ module.exports = {
 					name: '[path][name].[ext]',
 				},
 				type: 'javascript/auto'
+			},
+			{
+				test: /\.template\.html/,
+				loader: 'raw-loader',
+				type: 'javascript/auto'
 			}
 		]
 	}

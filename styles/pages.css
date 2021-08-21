@@ -2,6 +2,7 @@ ul {
 	margin: 0;
 	padding-top: 1em;
 	padding-bottom: 1em;
+	text-align: left;
 }
 
 [slot=split]:focus {

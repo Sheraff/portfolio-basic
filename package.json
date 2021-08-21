@@ -9,8 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "start": "serve .dist",
-    "build-gh-pages": "webpack --config gh-pages.config.js"
+    "start": "webpack --watch & serve .dist"
   },
   "repository": {
     "type": "git",
@@ -26,6 +25,7 @@
   "devDependencies": {
     "file-loader": "^6.2.0",
     "raw-loader": "^4.0.2",
+    "serve": "^12.0.0",
     "webpack": "^5.51.1",
     "webpack-cli": "^4.8.0"
   }

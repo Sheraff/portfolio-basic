@@ -2,7 +2,6 @@ const path = require('path');
 
 module.exports = {
 	mode: 'production',
-	watch: true,
 	entry: [
 		'./index.js',
 		'./build-files.js',

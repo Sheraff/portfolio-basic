@@ -6,5 +6,5 @@ customElements.define('split-target', SplitTarget)
 
 const link = document.createElement('link')
 link.rel = 'stylesheet'
-link.href = '/styles/pages.css'
+link.href = 'styles/pages.css'
 document.head.appendChild(link)

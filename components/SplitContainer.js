@@ -4,7 +4,10 @@ const fragment = range.createContextualFragment(template)
 
 function makeRoot() {
 	const template = /** @type {HTMLTemplateElement} */(fragment.firstElementChild)
-	return template.content.cloneNode(true)
+	const style = document.querySelector('style').cloneNode(true)
+	const root = template.content.cloneNode(true)
+	root.insertBefore(style, root.firstChild)
+	return root
 }
 
 /**

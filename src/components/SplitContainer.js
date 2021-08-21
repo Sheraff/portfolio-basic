@@ -7,10 +7,14 @@ function makeRoot() {
 	return template.content.cloneNode(true)
 }
 
-function findAllNextSiblings(node, nextSiblings = []) {
+/**
+ * @param {HTMLElement} node
+ * @param {HTMLElement[]} nextSiblings
+ */
+function findAllNextSiblings(node, nextSiblings) {
 	let sibling = node
 	while (
-		(sibling = sibling.nextElementSibling)
+		(sibling = /** @type {HTMLElement} */ (sibling.nextElementSibling))
 		&& sibling.tagName !== 'SCRIPT'
 		&& sibling.tagName !== 'STYLE'
 	) {
@@ -19,7 +23,7 @@ function findAllNextSiblings(node, nextSiblings = []) {
 	if (node === document.body) {
 		return nextSiblings
 	} else {
-		return findAllNextSiblings(node.parentNode, nextSiblings)
+		return findAllNextSiblings(node.parentElement, nextSiblings)
 	}
 }
 
@@ -31,14 +35,49 @@ export default class SplitContainer extends HTMLElement {
 		this.makeClone()
 		this.makeSplit()
 
+		// is this element open
 		this.state = false
+
+		// both standard DOM and cloned DOM events go through shadowRoot
 		this.shadowRoot.addEventListener('split-toggle', this.handle.bind(this))
 	}
 
-	handle(e) {
-		this.open(e.target)
+	// make yourself known to global registry when added to DOM
+	connectedCallback() {
+		if (this.isConnected) {
+			SplitContainer.registry.add(this)
+		}
+	}
 
+	// remove yourself from global registry when removed from DOM
+	disconnectedCallback() {
+		SplitContainer.registry.delete(this)
+	}
+
+	static registry = /** @type {Set<SplitContainer>} */ (new Set())
+
+	/**
+	 * if any instance from registry is open, no other instance can be open
+	 * @returns {SplitContainer | null} 
+	 */
+	static findOpenInstance() {
+		const iterator = SplitContainer.registry.values()
+		let value
+		while (value = iterator.next().value) {
+			if (value.state) {
+				return value
+			}
+		}
+		return null
+	}
+
+	handle(e) {
+
+		console.log(SplitContainer.findOpenInstance())
+		
 		if(e.detail) {
+			this.state = true
+			this.open(e.target)
 			this.split.appendChild(range.createContextualFragment(e.detail))
 			const delta = this.split.offsetHeight
 			const animOptions = {
@@ -75,6 +114,7 @@ export default class SplitContainer extends HTMLElement {
 				})
 			this.style.setProperty('pointer-events', 'none')
 		} else {
+			this.onClose()
 			this.movables.forEach(movable => 
 				movable.getAnimations().forEach(anim => {
 					anim.reverse()
@@ -86,6 +126,7 @@ export default class SplitContainer extends HTMLElement {
 			this.split.getAnimations().forEach(anim => {
 				anim.reverse()
 				anim.finished.then(() => {
+					this.state = false
 					this.split.innerHTML = ''
 				})
 			})

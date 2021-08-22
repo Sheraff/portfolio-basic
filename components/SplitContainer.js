@@ -30,6 +30,9 @@ function findAllNextSiblings(node, nextSiblings) {
 	}
 }
 
+const duration = 500
+const easing = 'ease'
+
 export default class SplitContainer extends HTMLElement {
 	constructor() {
 		super()
@@ -40,6 +43,7 @@ export default class SplitContainer extends HTMLElement {
 
 		// is this element open
 		this.state = false
+		this.available = Promise.resolve()
 
 		// both standard DOM and cloned DOM events go through shadowRoot
 		this.shadowRoot.addEventListener('split-toggle', this.toggle.bind(this))
@@ -104,7 +108,7 @@ export default class SplitContainer extends HTMLElement {
 	 * @param {string} domString
 	 */
 	async open(target, domString) {
-		console.log()
+		await this.available
 
 		const otherOpenInstance = SplitContainer.findOpenInstance()
 		if (otherOpenInstance) {
@@ -116,42 +120,39 @@ export default class SplitContainer extends HTMLElement {
 		this.split.appendChild(range.createContextualFragment(domString))
 
 		// create listeners and variables
-		const {
-			delta,
-			toSibling,
-		} = this.setCss(target)
+		this.setCss(target)
 
-		// apply transition animations
-		// const animOptions = {
-		// 	duration: 500,
-		// 	easing: 'ease',
-		// 	// fill: /** @type {FillMode} */('both'),
-		// 	fill: 'none',
-		// }
-		
-		// this.movables.forEach(movable => 
-		// 	movable.animate([
-		// 		{ transform: 'translateY(0px)' },
-		// 		{ transform: `translateY(${toSibling}px)` },
-		// 	], animOptions)
-		// )
-		// this.clone.animate([
-		// 	{ transform: 'translateY(0px)' },
-		// 	{ transform: `translateY(${delta}px)` },
-		// ], animOptions)
-		// this.split.animate([
-		// 	{ clipPath: `inset(0 0 ${delta}px 0)` },
-		// 	{ clipPath: 'inset(0 0 0 0)' }
-		// ], animOptions)
-		// 	.finished
-		// 	.then(() => {
-		// 		const scroll = window.scrollY
-		// 		this.split.focus()
-		// 		window.scrollTo(0, scroll)
-		// 		this.style.removeProperty('pointer-events')
-		// 	})
-		// this.style.setProperty('pointer-events', 'none')
-	
+		// launch animations
+		const animations = this.animateOpen()
+		this.available = finishedAnimations(animations)
+
+		this.style.setProperty('pointer-events', 'none')
+
+		await this.available
+
+		const scroll = window.scrollY
+		this.split.focus()
+		window.scrollTo(0, scroll)
+		this.style.removeProperty('pointer-events')
+	}
+
+	async close() {
+		await this.available
+
+		const animations = this.animateClose()
+
+		this.available = finishedAnimations(animations)
+
+		this.style.setProperty('pointer-events', 'none')
+
+		await this.available
+
+		this.unsetCss()
+		this.style.removeProperty('pointer-events')
+
+		// update state and DOM
+		this.state = false
+		this.split.innerHTML = ''
 	}
 
 	/**
@@ -170,15 +171,13 @@ export default class SplitContainer extends HTMLElement {
 			this.style.setProperty('--split', `${bottom - top}px`)
 
 			// how much space is occupied by the content
-			const delta = this.split.offsetHeight
-			this.clone.style.setProperty('--delta', `${delta}px`)
+			this.delta = this.split.offsetHeight
+			this.clone.style.setProperty('--delta', `${this.delta}px`)
 
 			// how much space is left before the first sibling
 			const siblingTop = this.movables[0].offsetTop
-			const toSibling = Math.max(0, this.offsetTop + this.offsetHeight + delta - siblingTop)
-			document.body.style.setProperty('--to-sibling', `${toSibling}px`)
-
-			return {delta, toSibling}
+			this.toSibling = Math.max(0, this.offsetTop + this.offsetHeight + this.delta - siblingTop)
+			document.body.style.setProperty('--to-sibling', `${this.toSibling}px`)
 		}
 		window.addEventListener('resize', onResize)
 		this.unsetCss = () => {
@@ -186,31 +185,68 @@ export default class SplitContainer extends HTMLElement {
 			this.clone.style.removeProperty('--delta')
 			document.body.style.removeProperty('--to-sibling')
 			window.removeEventListener('resize', onResize)
+			this.delta = null
+			this.toSibling = null
+			this.movables.length = 0
 		}
 		return onResize()
 	}
 
-	/**
-	 * @returns {Promise<void>} resolves when animation is complete
-	 */
-	close() {
-		// this.movables.forEach(movable => 
-		// 	movable.getAnimations().forEach(anim => {
-		// 		anim.reverse()
-		// 	})
-		// )
-		// this.movables.length = 0
-		// this.clone.getAnimations().forEach(anim => {
-		// 	anim.reverse()
-		// })
-		// this.split.getAnimations().forEach(anim => {
-		// 	anim.reverse()
-		// 	anim.finished.then(() => {
-				this.state = false
-				this.split.innerHTML = ''
-		// 	})
-		// })
-		this.unsetCss()
-		return Promise.resolve()
+	animateOpen() {
+		const options = {
+			duration,
+			easing,
+		}
+		const splitAnim = this.split.animate([
+			{ clipPath: `inset(0 0 ${this.delta}px 0)` },
+			{ clipPath: 'inset(0 0 0 0)' },
+		], options)
+
+		const cloneAnim = this.clone.animate([
+			{ transform: 'translateY(0px)' },
+			{ transform: `translateY(${this.delta}px)` },
+		], options)
+
+		const siblingsAnim = this.movables.map(movable => 
+			movable.animate([
+				{ transform: 'translateY(0px)' },
+				{ transform: `translateY(${this.toSibling}px)` },
+			], options)
+		)
+		return [...siblingsAnim, cloneAnim, splitAnim]
 	}
+
+	animateClose() {
+		const options = {
+			duration: duration / 2,
+			easing
+		}
+		const splitAnim = this.split.animate([
+			{ clipPath: 'inset(0 0 0 0)' },
+			{ clipPath: `inset(0 0 ${this.delta}px 0)` },
+		], options)
+
+		const cloneAnim = this.clone.animate([
+			{ transform: `translateY(${this.delta}px)` },
+			{ transform: 'translateY(0px)' },
+		], options)
+
+		const siblingsAnim = this.movables.map(movable => 
+			movable.animate([
+				{ transform: `translateY(${this.toSibling}px)` },
+				{ transform: 'translateY(0px)' },
+			], options)
+		)
+		return [...siblingsAnim, cloneAnim, splitAnim]
+	}
+}
+
+/**
+ * @param {Animation[]} animations
+ * @return {Promise<void>}
+ */
+function finishedAnimations(animations) {
+	return Promise
+		.all(animations.map(anim => anim.finished))
+		.then(() => null)
 }

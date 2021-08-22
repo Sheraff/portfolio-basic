@@ -1,0 +1,9 @@
+RewriteEngine On 
+RewriteCond %{HTTPS} off 
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+Header set Content-Security-Policy "default-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'"
+Header set Strict-Transport-Security "max-age=63072000"
+Header set X-Content-Type-Options "nosniff"
+Header set X-Frame-Options "DENY"
+Header set X-XSS-Protection "1; mode=block"

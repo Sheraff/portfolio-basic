@@ -3,7 +3,7 @@ ul {
 }
 
 .page {
-	--bg: #E1E1E1;
+	--bg: #fff;
 
 	position: relative;
 	z-index: 0;

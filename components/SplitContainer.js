@@ -188,8 +188,9 @@ export default class SplitContainer extends HTMLElement {
 			this.delta = null
 			this.toSibling = null
 			this.movables.length = 0
+			target.state = false
 		}
-		return onResize()
+		onResize()
 	}
 
 	animateOpen() {

@@ -7,4 +7,6 @@ customElements.define('split-target', SplitTarget)
 const link = document.createElement('link')
 link.rel = 'stylesheet'
 link.href = 'styles/pages.css'
+link.media = 'print'
+link.onload = () => link.media = 'all'
 document.head.appendChild(link)

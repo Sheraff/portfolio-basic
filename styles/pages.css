@@ -1,5 +1,10 @@
 ul {
 	margin: 0;
+	list-style: none;
+}
+
+li:not(:last-of-type) {
+	margin-bottom: 1em;
 }
 
 .page {
@@ -8,8 +13,7 @@ ul {
 	position: relative;
 	z-index: 0;
 	text-align: left;
-	padding-top: 2em;
-	padding-bottom: 2em;
+	padding: 2em 1em;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -31,4 +35,15 @@ ul {
 
 [slot=split]:focus {
 	outline: none;
+}
+
+.line {
+	display: flex;
+	align-items: center;
+	gap: 1em;
+}
+
+.icon {
+	width: 2em;
+	flex-shrink: 0;
 }

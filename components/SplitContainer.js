@@ -197,10 +197,11 @@ export default class SplitContainer extends HTMLElement {
 		const options = {
 			duration,
 			easing,
+			fill: /** @type {FillMode} */('backwards')
 		}
 		const splitAnim = this.split.animate([
-			{ clipPath: `inset(0 0 ${this.delta}px 0)` },
-			{ clipPath: 'inset(0 0 0 0)' },
+			{ clipPath: `inset(0 -100vw ${this.delta}px)` },
+			{ clipPath: 'inset(0 -100vw 0)' },
 		], options)
 
 		const cloneAnim = this.clone.animate([
@@ -214,7 +215,18 @@ export default class SplitContainer extends HTMLElement {
 				{ transform: `translateY(${this.toSibling}px)` },
 			], options)
 		)
-		return [...siblingsAnim, cloneAnim, splitAnim]
+
+		const animations = [...siblingsAnim, cloneAnim, splitAnim]
+
+		animations.forEach(anim => anim.pause())
+		const cssAnim = this.shadowRoot.querySelector('.anim')
+		cssAnim.addEventListener('animationend', () => {
+			cssAnim.classList.remove('go')
+			animations.forEach(anim => anim.play())
+		})
+		cssAnim.classList.add('go')
+
+		return animations
 	}
 
 	animateClose() {
@@ -223,8 +235,8 @@ export default class SplitContainer extends HTMLElement {
 			easing
 		}
 		const splitAnim = this.split.animate([
-			{ clipPath: 'inset(0 0 0 0)' },
-			{ clipPath: `inset(0 0 ${this.delta}px 0)` },
+			{ clipPath: 'inset(0 -100vw 0)' },
+			{ clipPath: `inset(0 -100vw ${this.delta}px)` },
 		], options)
 
 		const cloneAnim = this.clone.animate([

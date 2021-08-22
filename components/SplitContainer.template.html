@@ -18,12 +18,53 @@
 		}
 		.split {
 			position: absolute;
-			inset: var(--split) 0 0;
+			inset: calc(var(--split) + .1em) 0 0;
+		}
+		.anim {
+			position: absolute;
+			top: calc(var(--split) + .1em);
+			left: 50%;
+			width: 100vw;
+			transform: translateX(-50%);
+			z-index: 1;
+			opacity: 0;
+			
+			background-color: currentColor;
+			height: 1px;
+		}
+		.go {
+			animation: open 500ms ease-in;
+		}
+		@keyframes open {
+			0%  { transform: translateX(-50%) scaleX(.05) scaleY(1); opacity: 0; }
+			10% { transform: translateX(-50%) scaleX(.1)  scaleY(5); opacity: 1; }
+			30% { transform: translateX(-50%) scaleX(.4)  scaleY(1); opacity: 1; }
+			80% { transform: translateX(-50%) scaleX(.9)  scaleY(1); opacity: 1; }
+			to  { transform: translateX(-50%) scaleX(1)   scaleY(1); opacity: 0; }
+		}
+
+		@media screen and (min-width: 768px) {
+			@keyframes open {
+				0%  { transform: translateX(-50%) scaleX(.01) scaleY(1); opacity: 0; }
+				15% { transform: translateX(-50%) scaleX(.15) scaleY(6); opacity: 1; }
+				40% { transform: translateX(-50%) scaleX(.2)  scaleY(1); opacity: 1; }
+				70% { transform: translateX(-50%) scaleX(.8)  scaleY(1); opacity: 1; }
+				to  { transform: translateX(-50%) scaleX(1)   scaleY(1); opacity: 0; }
+			}
+		}
+		@media (prefers-color-scheme: dark) {
+			.anim {
+				height: 2px;
+				border-radius: 5px;
+				background-color: var(--accent);
+				filter: blur(2px);
+			}
 		}
 	</style>
 	<div class="content">
 		<slot></slot>
 	</div>
+	<div class="anim"></div>
 	<div class="split">
 		<slot name="split"></slot>
 	</div>

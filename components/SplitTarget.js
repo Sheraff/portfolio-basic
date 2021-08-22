@@ -4,7 +4,7 @@ const CLONE_MAP = new Map()
 function getPage(id) {
 	if (!FETCH_MAP.has(id)) 
 		FETCH_MAP.set(id, 
-			fetch(`pages/${id}.html`)
+			fetch(`pages/${id}`)
 				.then(res => res.text())
 		)
 	

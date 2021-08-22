@@ -97,7 +97,7 @@ export default class SplitContainer extends HTMLElement {
 
 	toggle(e) {
 		if(e.detail) {
-			this.open(e.target, e.detail)
+			this.open(e.target)
 		} else {
 			this.close()
 		}
@@ -105,15 +105,24 @@ export default class SplitContainer extends HTMLElement {
 
 	/**
 	 * @param {import('./SplitTarget').default} target
-	 * @param {string} domString
 	 */
-	async open(target, domString) {
+	async open(target) {
+		// start fetching early while we wrap up other things
+		const domStringPromise = target.getContent()
+
+		// wait for this instance to be done doing something else
 		await this.available
 
+		// close any other instance
 		const otherOpenInstance = SplitContainer.findOpenInstance()
 		if (otherOpenInstance) {
 			await otherOpenInstance.close()
 		}
+
+		// distract while we finish fetching
+		this.positionSplit(target)
+		await this.cssAnim()
+		const domString = await domStringPromise
 		
 		// update state and DOM
 		this.state = true
@@ -163,13 +172,7 @@ export default class SplitContainer extends HTMLElement {
 		this.movables.forEach(movable =>
 			movable.style.setProperty('transform', `translateY(var(--to-sibling, 0px))`)
 		)
-
-		const onResize = () => {
-			// where split-container content is split
-			const {top} = target.parentElement.getBoundingClientRect()
-			const {bottom} = target.getBoundingClientRect()
-			this.style.setProperty('--split', `${bottom - top}px`)
-
+		const firstPass = () => {
 			// how much space is occupied by the content
 			this.delta = this.split.offsetHeight
 			this.clone.style.setProperty('--delta', `${this.delta}px`)
@@ -178,6 +181,13 @@ export default class SplitContainer extends HTMLElement {
 			const siblingTop = this.movables[0].offsetTop
 			this.toSibling = Math.max(0, this.offsetTop + this.offsetHeight + this.delta - siblingTop)
 			document.body.style.setProperty('--to-sibling', `${this.toSibling}px`)
+		}
+		const onResize = () => {
+			// where split-container content is split
+			this.positionSplit(target)
+
+			// rest
+			firstPass()
 		}
 		window.addEventListener('resize', onResize)
 		this.unsetCss = () => {
@@ -190,7 +200,25 @@ export default class SplitContainer extends HTMLElement {
 			this.movables.length = 0
 			target.state = false
 		}
-		onResize()
+		firstPass()
+	}
+
+	positionSplit(target) {
+		const {top} = target.parentElement.getBoundingClientRect()
+		const {bottom} = target.getBoundingClientRect()
+		this.style.setProperty('--split', `${bottom - top}px`)
+	}
+
+	async cssAnim() {
+		const cssAnim = this.shadowRoot.querySelector('.anim')
+		const promise = new Promise(resolve => {
+			cssAnim.addEventListener('animationend', () => {
+				cssAnim.classList.remove('go')
+				resolve()
+			})
+		})
+		cssAnim.classList.add('go')
+		await promise
 	}
 
 	animateOpen() {
@@ -216,17 +244,7 @@ export default class SplitContainer extends HTMLElement {
 			], options)
 		)
 
-		const animations = [...siblingsAnim, cloneAnim, splitAnim]
-
-		animations.forEach(anim => anim.pause())
-		const cssAnim = this.shadowRoot.querySelector('.anim')
-		cssAnim.addEventListener('animationend', () => {
-			cssAnim.classList.remove('go')
-			animations.forEach(anim => anim.play())
-		})
-		cssAnim.classList.add('go')
-
-		return animations
+		return [...siblingsAnim, cloneAnim, splitAnim]
 	}
 
 	animateClose() {

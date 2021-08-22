@@ -14,12 +14,9 @@ function getPage(id) {
 export default class SplitTarget extends HTMLElement {
 	constructor() {
 		super()
-		getPage(this.id).then(page => {
-			this.content = page
-			this.addEventListener('click', this.toggle)
-			this.addEventListener('keydown', this.keydown)
-			this.setAttribute('role', 'button')
-		})
+		this.addEventListener('click', this.toggle)
+		this.addEventListener('keydown', this.keydown)
+		this.setAttribute('role', 'button')
 		if(!CLONE_MAP.has(this.id)) {
 			CLONE_MAP.set(this.id, [])
 		}
@@ -29,7 +26,7 @@ export default class SplitTarget extends HTMLElement {
 	toggle() {
 		this.state = !this.state
 		this.dispatchEvent(new CustomEvent('split-toggle', {
-			detail: this.state ? this.content : null,
+			detail: this.state,
 			bubbles: true
 		}))
 	}
@@ -38,6 +35,10 @@ export default class SplitTarget extends HTMLElement {
 		if (e.key === 'Enter') {
 			this.toggle()
 		}
+	}
+
+	getContent() {
+		return getPage(this.id)
 	}
 
 	get id() {

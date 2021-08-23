@@ -15,6 +15,9 @@ export default class NeonTitle extends HTMLElement {
 		this.open = this.shadowRoot.querySelector('.open')
 		this.close = this.shadowRoot.querySelector('.close')
 
+		// not very "reusable" but i want initial HTML to be as light as possible
+		document.querySelector('header').style.setProperty('overflow', 'hidden')
+
 		this.fillSpanFromSlot(
 			this.first,
 			this.shadowRoot.querySelector('slot[name=left]')
@@ -38,13 +41,21 @@ export default class NeonTitle extends HTMLElement {
 
 	randomizeNext(min, max) {
 		this.timeoutId = setTimeout(
-			() => this.contract(), 
+			() => {
+				if (typeof window.requestIdleCallback === 'function') {
+					this.idleId = window.requestIdleCallback(() => this.contract(), {timeout: 5000})
+				} else {
+					this.contract()
+				}
+			}, 
 			Math.random() * (max - min) * 1000 + min * 1000
 		)
 	}
 
 	async contract() {
 		clearTimeout(this.timeoutId)
+		if (window.cancelIdleCallback)
+			window.cancelIdleCallback(this.idleId)
 		if (this.isPlaying)
 			return
 

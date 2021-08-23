@@ -34,14 +34,14 @@ export default class SplitTarget extends HTMLElement {
 	loop(state = {}) {
 		requestAnimationFrame((time) => {
 			if (!state.nextFrame || time >= state.nextFrame) {
-				if (state.glitchCount < 10) {
+				if (state.glitchCount < 15) {
 					state.glitchCount++
 					this.glitch()
-					state.nextFrame = time + Math.random() * 300
+					state.nextFrame = time + Math.random() * 150
 				} else {
 					state.glitchCount = 0
 					this.clean()
-					state.nextFrame = time + Math.random() * 1600
+					state.nextFrame = time + Math.random() * 2000 + 1000
 				}
 			}
 			this.loop(state)
@@ -52,6 +52,7 @@ export default class SplitTarget extends HTMLElement {
 		const words = this.shadowRoot.querySelectorAll('.word')
 		words.forEach(word => {
 			word.querySelector('.mask').style.removeProperty('clip-path')
+			word.querySelector('.mask').style.removeProperty('transform')
 			word.querySelector('.base').style.removeProperty('clip-path')
 		})
 	}
@@ -59,10 +60,11 @@ export default class SplitTarget extends HTMLElement {
 	glitch() {
 		const words = this.shadowRoot.querySelectorAll('.word')
 		
-		const [layer, mask] = this.getRandomComplementaryMasks()
+		const [layer, mask, transform] = this.getRandomComplementaryMasks()
 
 		words.forEach(word => {
 			word.querySelector('.mask').style.setProperty('clip-path', layer)
+			word.querySelector('.mask').style.setProperty('transform', transform)
 			word.querySelector('.base').style.setProperty('clip-path', mask)
 		})
 	}
@@ -74,7 +76,8 @@ export default class SplitTarget extends HTMLElement {
 		const bottom = Math.min(100, Math.max(0, center + size / 2))
 		const mask = `polygon(0 ${top}%, 100% ${top}%, 100% ${bottom}%, 0 ${bottom}%)`
 		const masked = `polygon(0 0, 100% 0, 100% ${top}%, 0 ${top}%, 0 ${bottom}%, 100% ${bottom}%, 100% 100%, 0 100%)`
-		return [mask, masked]
+		const transform = `translateX(-${65/size}px)`
+		return [mask, masked, transform]
 	}
 
 	prepareAnim() {

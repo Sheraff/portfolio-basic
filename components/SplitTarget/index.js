@@ -1,8 +1,9 @@
 import template from './index.template.html'
 import {makeRoot} from '../../utils/dom'
+import CloneRegistry from './CloneRegistry'
 
+const CLONE_REGISTRY = new CloneRegistry()
 const FETCH_MAP = new Map()
-const CLONE_MAP = new Map()
 
 function getPage(id) {
 	if (!FETCH_MAP.has(id)) 
@@ -22,10 +23,7 @@ export default class SplitTarget extends HTMLElement {
 		this.addEventListener('click', this.toggle)
 		this.addEventListener('keydown', this.keydown)
 		this.setAttribute('role', 'button')
-		if(!CLONE_MAP.has(this.id)) {
-			CLONE_MAP.set(this.id, [])
-		}
-		CLONE_MAP.get(this.id).push(this)
+		CLONE_REGISTRY.register(this)
 
 		if (this.id === 'background') {
 			this.prepareAnim()
@@ -143,8 +141,6 @@ export default class SplitTarget extends HTMLElement {
 	}
 
 	set state(state) {
-		CLONE_MAP.get(this.id).forEach(el => {
-			el.dataset.state = String(state)
-		})
+		CLONE_REGISTRY.propagateState(this, state)
 	}
 }

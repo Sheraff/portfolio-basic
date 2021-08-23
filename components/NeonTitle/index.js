@@ -62,29 +62,30 @@ export default class NeonTitle extends HTMLElement {
 		this.isPlaying = true
 
 		const {width: heartW} = this.center.getBoundingClientRect()
+		const adjustedW = heartW * 3 / 4
 
 		await Promise.all([
 			this.spin(this.heart),
 			this.clip(this.center, {delay: 4000}),
-			this.fromTo(this.open, 0, heartW, {delay: 4000}),
-			this.fromTo(this.close, 0, -heartW, {delay: 4000}),
+			this.fromTo(this.open, 0, adjustedW, {delay: 4000}),
+			this.fromTo(this.close, 0, -adjustedW, {delay: 4000}),
 		])
 
 		this.heart.style.setProperty('opacity', '0')
 
 		this.last.style.setProperty('display', 'none')
-		await this.showName(heartW)
+		await this.showName(adjustedW)
 		this.last.style.removeProperty('display')
 		this.first.style.setProperty('display', 'none')
-		await this.showName(heartW)
+		await this.showName(adjustedW)
 		this.first.style.removeProperty('display')
 
 		this.heart.style.removeProperty('opacity')
 
 		await Promise.all([
 			this.unclip(this.center),
-			this.fromTo(this.open, heartW, 0),
-			this.fromTo(this.close, -heartW, 0),
+			this.fromTo(this.open, adjustedW, 0),
+			this.fromTo(this.close, -adjustedW, 0),
 		])
 
 		this.isPlaying = false

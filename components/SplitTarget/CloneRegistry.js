@@ -21,8 +21,31 @@ export default class CloneRegistry {
 
 		if (!this.isGlitching) {
 			this.isGlitching = true
-			this.glitch()
+			setTimeout(
+				() => this.glitch(),
+				Math.random() * 1000 + 500
+			)
 		}
+
+		target.addEventListener('pointerenter', (e) => {
+			if(e.pointerType === 'mouse')
+				this.mouseEnter(target.id)
+		})
+
+		target.addEventListener('pointerleave', () => this.mouseLeave())
+	}
+
+	/** @param {string} id */
+	mouseEnter(id) {
+		this.endGlitch()
+		this.lastId = id
+		const targets = this.map.get(id)
+		this.glitch(targets)
+	}
+
+	mouseLeave() {
+		this.endGlitch()
+		this.glitch()
 	}
 
 	/** 
@@ -35,16 +58,22 @@ export default class CloneRegistry {
 		})
 	}
 
-	async glitch() {
-		await new Promise(resolve => setTimeout(resolve, Math.random() * 400 + 150))
+	/** @param {SplitTarget[] | void} targets */
+	glitch(targets) {
 		const state = {}
-		state.targets = this.getNewTargets()
+		state.targets = targets || this.getNewTargets()
 		state.targets.forEach(target => target.prepareAnim())
 		this.loop(state)
-		await new Promise(resolve => setTimeout(resolve, Math.random() * 4000 + 2000))
-		cancelAnimationFrame(state.raf)
-		state.targets.forEach(target => target.clean())
-		this.glitch()
+		this.timeout = setTimeout(() => {
+			this.endGlitch()
+			this.glitch()
+		}, Math.random() * 4000 + 2000)
+	}
+
+	endGlitch() {
+		clearTimeout(this.timeout)
+		cancelAnimationFrame(this.raf)
+		this.map.get(this.lastId).forEach(target => target.clean())
 	}
 
 	getNewTargets() {
@@ -59,7 +88,7 @@ export default class CloneRegistry {
 	}
 
 	loop(state) {
-		state.raf = requestAnimationFrame((time) => {
+		this.raf = requestAnimationFrame((time) => {
 			if (!state.nextFrame || time >= state.nextFrame) {
 				if (state.glitchCount < 15) {
 					state.glitchCount++

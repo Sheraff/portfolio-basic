@@ -1,6 +1,14 @@
 import template from './index.template.html'
 import {makeRoot} from '../../utils/dom'
 
+const EASING = 'ease'
+const DURATION = 1000
+const DISTANCE_DURATION_RATIO = 13
+
+function getDuration(distance) {
+	return DURATION * Math.sqrt(distance) / DISTANCE_DURATION_RATIO
+}
+
 export default class NeonTitle extends HTMLElement {
 	constructor() {
 		super()
@@ -63,12 +71,13 @@ export default class NeonTitle extends HTMLElement {
 
 		const {width: heartW} = this.center.getBoundingClientRect()
 		const adjustedW = heartW * 3 / 4
+		const duration = getDuration(adjustedW)
 
 		await Promise.all([
-			this.spin(this.heart),
-			this.clip(this.center, {delay: 4000}),
-			this.fromTo(this.open, 0, adjustedW, {delay: 4000}),
-			this.fromTo(this.close, 0, -adjustedW, {delay: 4000}),
+			this.spin(this.heart, {duration: 4000 + duration}),
+			this.clip(this.center, {delay: 4000, duration}),
+			this.fromTo(this.open, 0, adjustedW, {delay: 4000, duration}),
+			this.fromTo(this.close, 0, -adjustedW, {delay: 4000, duration}),
 		])
 
 		this.heart.style.setProperty('opacity', '0')
@@ -83,9 +92,9 @@ export default class NeonTitle extends HTMLElement {
 		this.heart.style.removeProperty('opacity')
 
 		await Promise.all([
-			this.unclip(this.center),
-			this.fromTo(this.open, adjustedW, 0),
-			this.fromTo(this.close, -adjustedW, 0),
+			this.unClip(this.center, {duration}),
+			this.fromTo(this.open, adjustedW, 0, {duration}),
+			this.fromTo(this.close, -adjustedW, 0, {duration}),
 		])
 
 		this.isPlaying = false
@@ -94,27 +103,28 @@ export default class NeonTitle extends HTMLElement {
 
 	async showName(from) {
 		const {width: nameW} = this.name.getBoundingClientRect()
+		const duration = getDuration(nameW)
 
 		await Promise.all([
-			this.fromTo(this.open, from, -nameW/2),
-			this.fromTo(this.close, -from, nameW/2),
-			this.unclip(this.name)
+			this.fromTo(this.open, from, -nameW/2, {duration}),
+			this.fromTo(this.close, -from, nameW/2, {duration}),
+			this.unClip(this.name, {duration}),
 		])
 
 		this.open.style.setProperty('transform', `translateX(${-nameW/2}px)`)
 		this.close.style.setProperty('transform', `translateX(${nameW/2}px)`)
 		this.name.style.setProperty('clip-path', `inset(0)`)
 
-		await new Promise(resolve => setTimeout(resolve, 1000))
+		await new Promise(resolve => setTimeout(resolve, DURATION))
 
 		this.open.style.removeProperty('transform')
 		this.close.style.removeProperty('transform')
 		this.name.style.removeProperty('clip-path')
 
 		await Promise.all([
-			this.fromTo(this.open, -nameW/2, from),
-			this.fromTo(this.close, nameW/2, -from),
-			this.clip(this.name)
+			this.fromTo(this.open, -nameW/2, from, {duration}),
+			this.fromTo(this.close, nameW/2, -from, {duration}),
+			this.clip(this.name, {duration}),
 		])
 	}
 
@@ -123,7 +133,7 @@ export default class NeonTitle extends HTMLElement {
 			{ transform: 'rotateY(0turn)' },
 			{ transform: 'rotateY(7.25turn)' },
 		], {
-			duration: 5000,
+			duration: DURATION,
 			easing: 'ease-out',
 			...options,
 		}).finished
@@ -134,19 +144,19 @@ export default class NeonTitle extends HTMLElement {
 			{ clipPath: 'inset(0)' },
 			{ clipPath: 'inset(0 50%)' },
 		], {
-			duration: 1000,
-			easing: 'ease',
+			duration: DURATION,
+			easing: EASING,
 			...options,
 		}).finished
 	}
 	
-	unclip(node, options) {
+	unClip(node, options) {
 		return node.animate([
 			{ clipPath: 'inset(0 50%)' },
 			{ clipPath: 'inset(0)' },
 		], {
-			duration: 1000,
-			easing: 'ease',
+			duration: DURATION,
+			easing: EASING,
 			...options,
 		}).finished
 	}
@@ -156,8 +166,8 @@ export default class NeonTitle extends HTMLElement {
 			{ transform: `translateX(${from}px)` },
 			{ transform: `translateX(${to}px)` },
 		], {
-			duration: 1000,
-			easing: 'ease',
+			duration: DURATION,
+			easing: EASING,
 			...options,
 		}).finished
 	}

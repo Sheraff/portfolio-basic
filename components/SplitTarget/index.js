@@ -24,28 +24,6 @@ export default class SplitTarget extends HTMLElement {
 		this.addEventListener('keydown', this.keydown)
 		this.setAttribute('role', 'button')
 		CLONE_REGISTRY.register(this)
-
-		if (this.id === 'background') {
-			this.prepareAnim()
-			this.loop()
-		}
-	}
-
-	loop(state = {}) {
-		requestAnimationFrame((time) => {
-			if (!state.nextFrame || time >= state.nextFrame) {
-				if (state.glitchCount < 15) {
-					state.glitchCount++
-					this.glitch()
-					state.nextFrame = time + Math.random() * 150
-				} else {
-					state.glitchCount = 0
-					this.clean()
-					state.nextFrame = time + Math.random() * 2000 + 1000
-				}
-			}
-			this.loop(state)
-		})
 	}
 
 	clean() {
@@ -57,27 +35,13 @@ export default class SplitTarget extends HTMLElement {
 		})
 	}
 
-	glitch() {
+	glitch([layer, mask, transform]) {
 		const words = this.shadowRoot.querySelectorAll('.word')
-		
-		const [layer, mask, transform] = this.getRandomComplementaryMasks()
-
 		words.forEach(word => {
 			word.querySelector('.mask').style.setProperty('clip-path', layer)
 			word.querySelector('.mask').style.setProperty('transform', transform)
 			word.querySelector('.base').style.setProperty('clip-path', mask)
 		})
-	}
-
-	getRandomComplementaryMasks() {
-		const size = Math.floor(Math.random() * 40 + 10) // <= change here for size of glitch
-		const center = Math.floor(Math.random() * 100)
-		const top = Math.min(100, Math.max(0, center - size / 2))
-		const bottom = Math.min(100, Math.max(0, center + size / 2))
-		const mask = `polygon(0 ${top}%, 100% ${top}%, 100% ${bottom}%, 0 ${bottom}%)`
-		const masked = `polygon(0 0, 100% 0, 100% ${top}%, 0 ${top}%, 0 ${bottom}%, 100% ${bottom}%, 100% 100%, 0 100%)`
-		const transform = `translateX(-${65/size}px)`
-		return [mask, masked, transform]
 	}
 
 	prepareAnim() {

@@ -24,9 +24,11 @@ export default class NeonTitle extends HTMLElement {
 			this.shadowRoot.querySelector('slot[name=right]')
 		)
 
-		setTimeout(() => {
+		this.timeoutId = setTimeout(() => {
 			this.contract()
 		}, Math.random() * 10000 + 5000)
+
+		this.addEventListener('click', this.contract)
 	}
 
 	fillSpanFromSlot(span, slot) {
@@ -37,6 +39,11 @@ export default class NeonTitle extends HTMLElement {
 	}
 
 	async contract() {
+		clearTimeout(this.timeoutId)
+		if (this.isPlaying)
+			return
+
+		this.isPlaying = true
 
 		const {width: heartW} = this.center.getBoundingClientRect()
 
@@ -63,6 +70,8 @@ export default class NeonTitle extends HTMLElement {
 			this.fromTo(this.open, heartW, 0),
 			this.fromTo(this.close, -heartW, 0),
 		])
+
+		this.isPlaying = false
 	}
 
 	async showName(from) {

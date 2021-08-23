@@ -73,12 +73,14 @@
 
 		main a {
 			color: var(--color);
+			text-decoration-thickness: 1px;
 		}
 
 		svg[u] {
 			width: .8em;
 			height: .8em;
 			vertical-align: middle;
+			margin-left: .1em;
 		}
 
 		[nowrap] {
@@ -92,6 +94,7 @@
 
 		split-target {
 			text-decoration: underline;
+			text-decoration-thickness: 1px;
 			cursor: pointer;
 		}
 
@@ -105,6 +108,10 @@
 
 		footer a {
 			width: 3em;
+		}
+
+		svg {
+			overflow: visible;
 		}
 
 		path:not([fill]):not([stroke]) {
@@ -126,9 +133,10 @@
 
 	<svg id="defs">
 		<defs>
-			<symbol id="external" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet">
-				<path d="M432 320h-32a16 16 0 00-16 16v112H64V128h144a16 16 0 0016-16V80a16 16 0 00-16-16H48a48 48 0 00-48 48v352a48 48 0 0048 48h352a48 48 0 0048-48V336a16 16 0 00-16-16zM488 0H360a24 24 0 00-17 41l35.7 35.7L135 320.4a24 24 0 000 34l22.7 22.6a24 24 0 0034 0l243.6-243.7L471 169a24 24 0 0041-17V24a24 24 0 00-24-24z"/>
-			</symbol>
+			<symbol id="external" overflow="visible" viewBox="0 0 187.1 187.6">
+				<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1px" vector-effect="non-scaling-stroke" d="M177.7 93.8v84H9.7V9.8h84"/>
+				<path d="M206-7.3v45a11.2 11.2 0 01-11.2 11.2l-15.3-15.2-93.1 93.2a12 12 0 01-16.9 0l-8.9-8.9a12 12 0 010-16.8l93.2-93.3-15.3-15.2a11.2 11.2 0 0111.3-11.3h45A11.2 11.2 0 01206-7.3z"/>
+			</svg>
 		</defs>
 	</svg>
 

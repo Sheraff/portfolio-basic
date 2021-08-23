@@ -24,9 +24,7 @@ export default class NeonTitle extends HTMLElement {
 			this.shadowRoot.querySelector('slot[name=right]')
 		)
 
-		this.timeoutId = setTimeout(() => {
-			this.contract()
-		}, Math.random() * 10000 + 5000)
+		this.randomizeNext(5, 15)
 
 		this.addEventListener('click', this.contract)
 	}
@@ -36,6 +34,13 @@ export default class NeonTitle extends HTMLElement {
 			.map(node => node.textContent)
 			.join(' ')
 		span.textContent = text
+	}
+
+	randomizeNext(min, max) {
+		this.timeoutId = setTimeout(
+			() => this.contract(), 
+			Math.random() * (max - min) * 1000 + min * 1000
+		)
 	}
 
 	async contract() {
@@ -72,6 +77,7 @@ export default class NeonTitle extends HTMLElement {
 		])
 
 		this.isPlaying = false
+		this.randomizeNext(30, 60)
 	}
 
 	async showName(from) {

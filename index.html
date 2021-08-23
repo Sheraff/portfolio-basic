@@ -40,14 +40,24 @@
 		header {
 			padding: 1em;
 		}
-
+		
 		h1 {
-			color: var(--accent);
-			font-size: 4em;
-			margin: 0;
 			position: relative;
 			top: .1em;
+			color: var(--accent);
+			font-size: 0;
+			margin: 0;
+			font-size: 4em;
 			text-align: center;
+		}
+
+		neon-title {
+			display: flex;
+			justify-content: center;
+		}
+
+		neon-title .name {
+			display: none;
 		}
 
 		main {
@@ -88,7 +98,7 @@
 		}
 
 		@media (prefers-color-scheme: light) {
-			h1 [♡] {
+			h1 [slot="heart"] {
 				position: relative;
 				top: -.15em;
 				font-size: .7em;
@@ -101,7 +111,15 @@
 	</style>
 
 	<header>
-		<h1>﹛<span ♡>♡</span>﹜</h1>
+		<h1>
+			<neon-title>
+				<span slot="left" class="name">Florian</span>
+				<span slot="open">﹛</span>
+				<span slot="heart">♡</span>
+				<span slot="close">﹜</span>
+				<span slot="right" class="name">Pellet</span>
+			</neon-title>
+		</h1>
 	</header>
 
 	<main>

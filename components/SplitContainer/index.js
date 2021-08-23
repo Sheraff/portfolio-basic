@@ -1,14 +1,5 @@
-import template from './SplitContainer.template.html'
-const range = document.createRange()
-const fragment = range.createContextualFragment(template)
-
-function makeRoot() {
-	const template = /** @type {HTMLTemplateElement} */(fragment.firstElementChild)
-	const style = document.querySelector('style').cloneNode(true)
-	const root = template.content.cloneNode(true)
-	root.insertBefore(style, root.firstChild)
-	return root
-}
+import template from './index.template.html'
+import {range, makeRoot} from '../../utils/dom'
 
 /**
  * @param {HTMLElement} node
@@ -37,7 +28,7 @@ export default class SplitContainer extends HTMLElement {
 	constructor() {
 		super()
 		this.attachShadow({ mode: 'open' })
-		this.shadowRoot.appendChild(makeRoot())
+		this.shadowRoot.appendChild(makeRoot(template))
 		this.makeClone()
 		this.makeSplit()
 
@@ -104,7 +95,7 @@ export default class SplitContainer extends HTMLElement {
 	}
 
 	/**
-	 * @param {import('./SplitTarget').default} target
+	 * @param {import('../SplitTarget').default} target
 	 */
 	async open(target) {
 		// start fetching early while we wrap up other things
@@ -165,7 +156,7 @@ export default class SplitContainer extends HTMLElement {
 	}
 
 	/**
-	 * @param {import('./SplitTarget').default} target
+	 * @param {import('../SplitTarget').default} target
 	 */
 	setCss(target) {
 		this.movables = findAllNextSiblings(this, [])

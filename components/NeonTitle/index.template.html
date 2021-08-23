@@ -1,0 +1,61 @@
+<template>
+	<style>
+		:host {
+			white-space: nowrap;
+			perspective: 50px;
+			perspective-origin: center 20%;
+		}
+
+		span {
+			display: inline-block;
+		}
+
+		.center {
+			position: relative;
+		}
+
+		.name {
+			position: absolute;
+			left: 50%;
+			transform: translateX(-50%);
+			clip-path: inset(0 50%);
+		}
+
+		.spin {
+			animation: 5s ease-out 0s infinite spin;
+		}
+		
+		.pump {
+			animation: 1s ease-in-out 0s infinite pump;
+		}
+
+		@keyframes spin {
+			from { transform: rotateY(0turn); }
+			to   { transform: rotateY(7.25turn); }
+		}
+
+		@keyframes pump {
+			0%  { transform: scale(1)   }
+			10% { transform: scale(1.2) }
+			50%  { transform: scale(1)   }
+		}
+		
+	</style>
+	<span class="open"><slot name="open"></slot></span>
+	<span class="center">
+		<span class="name">
+			<span class="first"></span>
+			<span class="last"></span>
+		</span>
+		<!-- <span class="pump"> -->
+			<!-- <span class="spin"> -->
+				<span class="heart">
+					<slot name="heart"></slot>
+				</span>
+			<!-- </span> -->
+		<!-- </span> -->
+	</span>
+	<span class="close"><slot name="close"></slot></span>
+	<span class="left"><slot name="left"></slot></span>
+	<span class="right"><slot name="right"></slot></span>
+</template>

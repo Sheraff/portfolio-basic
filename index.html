@@ -37,6 +37,10 @@
 			overflow-y: auto;
 		}
 
+		#defs {
+			display: none;
+		}
+
 		header {
 			padding: 1em;
 		}
@@ -69,6 +73,16 @@
 
 		main a {
 			color: var(--color);
+		}
+
+		svg[u] {
+			width: .8em;
+			height: .8em;
+			vertical-align: middle;
+		}
+
+		[nowrap] {
+			white-space: nowrap;
 		}
 
 		p, split-container {
@@ -110,6 +124,14 @@
 		}
 	</style>
 
+	<svg id="defs">
+		<defs>
+			<symbol id="external" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet">
+				<path d="M432 320h-32a16 16 0 00-16 16v112H64V128h144a16 16 0 0016-16V80a16 16 0 00-16-16H48a48 48 0 00-48 48v352a48 48 0 0048 48h352a48 48 0 0048-48V336a16 16 0 00-16-16zM488 0H360a24 24 0 00-17 41l35.7 35.7L135 320.4a24 24 0 000 34l22.7 22.6a24 24 0 0034 0l243.6-243.7L471 169a24 24 0 0041-17V24a24 24 0 00-24-24z"/>
+			</symbol>
+		</defs>
+	</svg>
+
 	<header>
 		<h1>
 			<neon-title>
@@ -126,7 +148,7 @@
 		<p>I am a front end developer driven by the intellectual craftsmanship required for projects that expect excellence down to the smallest level of detail.</p>
 		<split-container role="paragraph">
 			As the main developer for 
-			<a href="https://louvre.fr" target="_blank" rel="noopener noreferrer" >louvre.fr</a>
+			<a href="https://louvre.fr" target="_blank" rel="noopener noreferrer" nowrap>louvre.fr <svg u><use href="#external"/></svg></a>
 			I got to apply my 
 			<split-target data-page="background">engineering background</split-target>
 			and my

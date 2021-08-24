@@ -203,9 +203,11 @@ export default class SplitContainer extends HTMLElement {
 	async cssAnim() {
 		const cssAnim = this.shadowRoot.querySelector('.anim')
 		const promise = new Promise(resolve => {
-			cssAnim.addEventListener('animationend', () => {
-				cssAnim.classList.remove('go')
-				resolve()
+			cssAnim.addEventListener('animationend', (event) => {
+				if (event.target === cssAnim) {
+					cssAnim.classList.remove('go')
+					resolve()
+				}
 			})
 		})
 		cssAnim.classList.add('go')

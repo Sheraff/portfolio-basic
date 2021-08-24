@@ -1,0 +1,6 @@
+<svg id="extdef" xmlns="http://www.w3.org/2000/svg" overflow="visible" viewBox="0 0 187.1 187.6">
+	<g id="external">
+		<path fill="none" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1px" vector-effect="non-scaling-stroke" d="M177.7 93.8v84H9.7V9.8h84"/>
+		<path fill="black" d="M206-7.3v45a11.2 11.2 0 01-11.2 11.2l-15.3-15.2-93.1 93.2a12 12 0 01-16.9 0l-8.9-8.9a12 12 0 010-16.8l93.2-93.3-15.3-15.2a11.2 11.2 0 0111.3-11.3h45A11.2 11.2 0 01206-7.3z"/>
+	</g>
+</svg>

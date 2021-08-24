@@ -33,6 +33,7 @@ export default class CloneRegistry {
 		})
 
 		target.addEventListener('pointerleave', () => this.mouseLeave())
+		target.addEventListener('pointercancel', () => this.mouseLeave())
 	}
 
 	/** @param {string} id */
@@ -64,10 +65,13 @@ export default class CloneRegistry {
 		state.targets = targets || this.getNewTargets()
 		state.targets.forEach(target => target.prepareAnim())
 		this.loop(state)
-		this.timeout = setTimeout(() => {
-			this.endGlitch()
-			this.glitch()
-		}, Math.random() * 4000 + 2000)
+
+		if (!targets) {
+			this.timeout = setTimeout(() => {
+				this.endGlitch()
+				this.glitch()
+			}, Math.random() * 4000 + 2000)
+		}
 	}
 
 	endGlitch() {
